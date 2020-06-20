@@ -1,0 +1,13 @@
+[package]
+name = "the_strats"
+version = "0.1.0"
+authors = ["Kiley Owen <yelikdev@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+gdnative = "*"
+legion = "*"
+crossbeam = "*"
+
+[lib]
+crate-type = ["cdylib"]
