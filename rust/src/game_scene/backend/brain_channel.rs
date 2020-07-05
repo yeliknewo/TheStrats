@@ -23,6 +23,14 @@ impl BrainChannel {
     pub fn get_event(&mut self) -> Result<FrontToBrain, BrainError> {
         self.recv_from_front.recv().map_err(|error| BrainError::RecvError(error, stack!()))
     }
+
+    pub fn try_drain(&mut self) -> Vec<FrontToBrain> {
+        self.recv_from_front.try_iter().collect()
+    }
+
+    pub fn send_event(&mut self, event: BrainToFront) -> Result<(), BrainError> {
+        self.send_to_front.send(event).map_err(|error| BrainError::SendError(error, stack!()))
+    }
 }
 
 pub struct FrontChannel {
@@ -46,5 +54,5 @@ pub enum FrontToBrain {
 }
 
 pub enum BrainToFront {
-
+    Log(String),
 }

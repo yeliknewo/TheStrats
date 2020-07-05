@@ -26,9 +26,9 @@ pub mod log {
 
     fn should_log(log_level: LogLevel) -> bool {
         match LOG_LEVEL {
-             LogLevel::Full => true,
-             LogLevel::Small => log_level == LogLevel::Small || log_level == LogLevel::Empty,
-             LogLevel::Empty => log_level == LogLevel::Empty,
+            LogLevel::Full => true,
+            LogLevel::Small => log_level == LogLevel::Small || log_level == LogLevel::Empty,
+            LogLevel::Empty => log_level == LogLevel::Empty,
         }
     }
 

@@ -18,4 +18,12 @@ impl GlobalJob {
             base_outputs: base_outputs,
         }
     }
+
+    pub fn get_base_inputs(&self) -> &Stocks {
+        &self.base_inputs
+    }
+
+    pub fn get_base_outputs(&self) -> &Stocks {
+        &self.base_outputs
+    }
 }

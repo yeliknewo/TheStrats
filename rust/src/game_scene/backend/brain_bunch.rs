@@ -18,7 +18,7 @@ impl BrainBunch {
             brain_thread_handles: vec!(std::thread::spawn(move || {
                 super::brain_thread::start(brain_channel);
             })),
-            front_channel: front_channel,
+            front_channel,
         }
     }
 

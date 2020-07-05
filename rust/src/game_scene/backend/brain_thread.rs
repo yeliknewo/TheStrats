@@ -2,16 +2,22 @@ use legion::prelude::*;
 use std::collections::HashMap;
 
 use crate::typedef::ResourceCount;
-use super::{BrainError, brain_channel::{FrontToBrain, BrainChannel}, components::{Commune, GlobalJob, Demographic, Resource, Stocks, LocalJob}};
+use super::{systems::{make_production_system}, BrainError, brain_channel::{FrontToBrain, BrainToFront, BrainChannel}, components::{Commune, GlobalJob, Demographic, Resource, Stocks, LocalJob}};
 
 pub fn start(mut brain_channel: BrainChannel) {
     let mut running = true;
     let universe = Universe::new();
     let mut world = universe.create_world();
+    let mut schedule = Schedule::builder()
+    .add_system(make_production_system())
+    .build();
+    let mut resources = Resources::default();
     while running {
-        match brain_channel.get_event() {
-            Ok(event) => match event {
+        for event in brain_channel.try_drain() {
+             match event {
                 FrontToBrain::Init => {
+
+                    crate::log::full("Init Recieved".into());
                     
                     let food = Resource::new("Food".to_string());
 
@@ -23,8 +29,6 @@ pub fn start(mut brain_channel: BrainChannel) {
 
                     let farmer_base_inputs = Stocks::new({
                         let mut map = HashMap::<Entity, ResourceCount>::new();
-
-                        map.insert(food_entity, 0.0);
 
                         map
                     });
@@ -45,14 +49,16 @@ pub fn start(mut brain_channel: BrainChannel) {
 
                     let farmer_local_job_entity = world.insert((), vec!((farmer_local_job,)))[0];
 
-                    let commune = Commune::new(0, vec!(farmer_global_job_entity), vec!());
+                    let commune = Commune::new(0, vec!(farmer_local_job_entity), vec!());
 
-                    let commune_entity = world.insert((), vec!((commune,)))[0];
+                    let commune_entity = world.insert((), vec!((commune,Some(Stocks::default()))))[0];
+
+                    crate::log::full("Exit Init".into());
 
                 }
                 FrontToBrain::Exit => running = false,
-            },
-            Err(error) => crate::log::empty_error(format!("{}", BrainError::BrainError(Box::new(error), stack!()))),
+            }
         }
+        schedule.execute(&mut world, &mut resources);
     }
 }

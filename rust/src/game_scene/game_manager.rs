@@ -1,6 +1,6 @@
 use gdnative::*;
 
-use super::backend::{FrontToBrain, BrainBunch, start, BrainError};
+use super::backend::{FrontToBrain, BrainToFront, BrainBunch, start, BrainError};
 
 type Owner = Control;
 
@@ -38,13 +38,18 @@ impl GameManager {
     fn _process(&mut self, _owner: Owner, _delta: f64) {
         for brain_to_front_event in self.brain_bunch.try_get_events() {
             match brain_to_front_event {
-
+                BrainToFront::Log(msg) => crate::log::empty(msg),
             }
         }
     }
 
     fn stop_backend(&mut self) {
-        self.brain_bunch.stop();
+        for rs in self.brain_bunch.stop() {
+            match rs {
+                Ok(()) => (),
+                Err(error) => crate::log::empty_error(format!("{}", BrainError::BrainError(Box::new(error), stack!()))),
+            }
+        }
     }
 
 }

@@ -1,6 +1,6 @@
 use crate::typedef::DemographicCount;
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone)]
 pub struct Demographic {
     count: DemographicCount
 }
@@ -12,5 +12,9 @@ impl Demographic {
         Demographic {
             count: count,
         }
+    }
+
+    pub fn get_count(&self) -> DemographicCount {
+        self.count
     }
 }
