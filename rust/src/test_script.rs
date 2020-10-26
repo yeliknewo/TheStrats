@@ -1,4 +1,4 @@
-use gdnative::*;
+use gdnative::prelude::*;
 
 #[derive(NativeClass)]
 #[inherit(Control)]
@@ -11,11 +11,11 @@ impl TestScript {
     }
 
     #[export]
-    fn _ready(&self, _owner: gdnative::Control) {
+    fn _ready(&self, _owner: Control) {
         godot_print!("Hello, world!")
     }
 }
 
-pub fn init(handle: gdnative::init::InitHandle) {
+pub fn init(handle: nativescript::init::InitHandle) {
     handle.add_class::<TestScript>();
 }

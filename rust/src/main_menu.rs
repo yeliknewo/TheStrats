@@ -1,4 +1,4 @@
-use gdnative::*;
+use gdnative::prelude::*;
 
 #[derive(NativeClass)]
 #[inherit(Button)]
@@ -13,13 +13,13 @@ impl MainMenuPlayButton {
     }
 
     #[export]
-    unsafe fn _pressed(&self, owner: gdnative::Button) {
+    unsafe fn _pressed(&self, owner: Button) {
         if let Some(tree) = &mut owner.get_tree() {
             tree.change_scene(GodotString::from(GAME_SCENE_PATH)).expect("Game Scene could not be loaded");
         }
     }
 }
 
-pub fn init(handle: gdnative::init::InitHandle) {
+pub fn init(handle: nativescript::init::InitHandle) {
     handle.add_class::<MainMenuPlayButton>();
 }

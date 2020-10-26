@@ -3,9 +3,9 @@ mod local_job;
 mod resource;
 mod stocks;
 mod demographic;
-mod commune;
+mod province;
 
-pub use commune::Commune;
+pub use province::Province;
 pub use demographic::Demographic;
 pub use global_job::GlobalJob;
 pub use local_job::LocalJob;

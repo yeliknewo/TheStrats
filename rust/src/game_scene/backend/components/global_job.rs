@@ -13,9 +13,9 @@ impl GlobalJob {
         base_outputs: Stocks
     ) -> GlobalJob {
         GlobalJob {
-            name: name,
-            base_inputs: base_inputs,
-            base_outputs: base_outputs,
+            name,
+            base_inputs,
+            base_outputs,
         }
     }
 

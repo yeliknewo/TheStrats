@@ -1,40 +1,28 @@
-use legion::prelude::*;
-use std::collections::HashMap;
+use legion::{systems::ParallelRunnable, *};
 
-use super::super::components::{Commune, Stocks, GlobalJob, Demographic, LocalJob};
+use super::{take_province_stocks, give_province_stocks, super::components::{Province, Stocks, GlobalJob, Demographic, LocalJob}};
 use crate::typedef::ResourceCount;
 
-pub fn make_production_system() -> Box<dyn Schedulable> {
+pub fn make() -> System {
     SystemBuilder::new("production")
-    .with_query(<Read<Commune>>::query())
+    .with_query(<Read<Province>>::query())
     .read_component::<GlobalJob>()
     .read_component::<LocalJob>()
     .read_component::<Demographic>()
-    .read_component::<Commune>()
-    .write_component::<Stocks>()
+    .read_component::<Province>()
     .write_component::<Option<Stocks>>()
-    .build(|_, world, (), query_commune| {
-        let mut commune_stocks_map = {
-            let mut commune_stocks_map = HashMap::new();
-            let mut entity_communes = vec!();
-            for (entity_commune, _commune) in query_commune.iter_entities(world) {
-                entity_communes.push(entity_commune);
-            }
-            for entity_commune in entity_communes {
-                commune_stocks_map.insert(entity_commune, world.get_component_mut::<Option<Stocks>>(entity_commune).unwrap_or_else(|| {
-                    crate::log::empty_error(stack!());
-                    panic!(stack!());
-                }).take().unwrap());
-            }
-            commune_stocks_map
-        };
+    .build(|_, world, (), query_province| {
 
-        for (entity_commune, commune_stocks) in &mut commune_stocks_map {
-            let commune = world.get_component::<Commune>(*entity_commune).unwrap_or_else(|| {
+        let q: String = query_province;
+        
+        let mut province_stocks_map = take_province_stocks(world, query_province);
+
+        for (entity_province, province_stocks) in &mut province_stocks_map {
+            let province = world.get_component::<Province>(*entity_province).unwrap_or_else(|| {
                 crate::log::empty_error(stack!());
                 panic!(stack!())
             });
-            for entity_local_job in commune.get_local_jobs() {
+            for entity_local_job in province.get_local_jobs() {
                 let local_job = world.get_component::<LocalJob>(*entity_local_job).unwrap_or_else(|| {
                     crate::log::empty_error(stack!());
                     panic!(stack!())
@@ -54,7 +42,7 @@ pub fn make_production_system() -> Box<dyn Schedulable> {
                     let mut current_ratio = 1f64;
                     for (resource_entity, input_resource_count) in global_job.get_base_inputs().get_stocks() {
                         let requested_input = input_resource_count * input_efficiency * throughput;
-                        let available_input = commune_stocks.get_stocks().get(&resource_entity).unwrap_or(&0f64);
+                        let available_input = province_stocks.get_stocks().get(&resource_entity).unwrap_or(&0f64);
                         let ratio = requested_input / available_input;
                         if ratio < current_ratio {
                             current_ratio = ratio;
@@ -67,21 +55,12 @@ pub fn make_production_system() -> Box<dyn Schedulable> {
                 let output_efficiency = local_job.get_output_efficiency();
                 let output = input_ratio * throughput * output_efficiency;
                 let actual_output = global_job.get_base_outputs().multiply_from(output);
-                commune_stocks.subtract_stocks(&actual_input);
-                commune_stocks.add_stocks(&actual_output);
+                province_stocks.subtract_stocks(&actual_input);
+                province_stocks.add_stocks(&actual_output);
             }
         }
 
-        for (entity_commune, commune_stocks) in commune_stocks_map.drain() {
-            crate::log::full(format!("Stocks 1: {:?}", commune_stocks));
-            if let Some(_old_commune_stocks) = world.get_component_mut::<Option<Stocks>>(entity_commune).unwrap_or_else(|| {
-                crate::log::empty_error(stack!());
-                panic!(stack!())
-            }).replace(commune_stocks) {
-                crate::log::empty_error(stack!());
-                panic!(stack!())
-            }
-        }
+        give_province_stocks(world, province_stocks_map);
 
     })
 }

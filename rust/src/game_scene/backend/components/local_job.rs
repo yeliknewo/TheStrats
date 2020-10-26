@@ -1,4 +1,4 @@
-use legion::prelude::*;
+use legion::*;
 
 use crate::typedef::ResourceCount;
 
@@ -19,11 +19,11 @@ impl LocalJob {
         output_efficiency: ResourceCount
     ) -> LocalJob {
         LocalJob {
-            entity_demographic: entity_demographic,
-            entity_global_job: entity_global_job,
-            input_efficency: input_efficency,
-            throughput_efficiency: throughput_efficiency,
-            output_efficiency: output_efficiency,
+            entity_demographic,
+            entity_global_job,
+            input_efficency,
+            throughput_efficiency,
+            output_efficiency,
         }
     }
 

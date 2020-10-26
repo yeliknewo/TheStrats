@@ -1,4 +1,4 @@
-use gdnative::*;
+use gdnative::prelude::*;
 
 #[macro_use]
 pub mod macros;
@@ -7,7 +7,7 @@ mod main_menu;
 mod game_scene;
 
 mod typedef {
-    pub type CommuneId = u64;
+    pub type ProvinceId = u64;
     pub type DemographicCount = u64;
     pub type ResourceCount = f64;
 }
@@ -69,7 +69,7 @@ pub mod log {
     }
 }
 
-fn init(handle: gdnative::init::InitHandle) {
+fn init(handle: nativescript::init::InitHandle) {
     test_script::init(handle);
     main_menu::init(handle);
     game_scene::init(handle);

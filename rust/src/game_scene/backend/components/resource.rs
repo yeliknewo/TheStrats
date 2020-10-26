@@ -1,13 +1,18 @@
+use crate::typedef::ResourceCount;
+
 pub struct Resource {
-    name: String
+    name: String,
+    transportation_cost: ResourceCount,
 }
 
 impl Resource {
     pub fn new(
-        name: String
+        name: String,
+        transportation_cost: ResourceCount,
     ) -> Resource {
         Resource {
-            name: name,
+            name,
+            transportation_cost,
         }
     }
 }

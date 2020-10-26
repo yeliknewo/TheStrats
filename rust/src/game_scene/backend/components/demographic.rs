@@ -10,7 +10,7 @@ impl Demographic {
         count: DemographicCount
     ) -> Demographic {
         Demographic {
-            count: count,
+            count,
         }
     }
 
