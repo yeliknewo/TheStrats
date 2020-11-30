@@ -19,6 +19,6 @@ fn make_resource(resource_type: ResourceType) -> (ResourceType, Resource) {
 pub fn make(world: &mut World) -> HashMap<ResourceType, Entity> {
     vec!(ResourceType::Food, ResourceType::Transportation).drain(..).map(|resource_type| {
         let (resource_type, resource) = make_resource(resource_type);
-        (resource_type, world.insert((resource, )))
+        (resource_type, world.create_entity().with(resource).build())
     }).collect()
 }

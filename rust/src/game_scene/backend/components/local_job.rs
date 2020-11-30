@@ -10,6 +10,10 @@ pub struct LocalJob {
     output_efficiency: ResourceCount,
 }
 
+impl Component for LocalJob {
+    type Storage = VecStorage<Self>;
+}
+
 impl LocalJob {
     pub fn new(
         entity_demographic: Entity,

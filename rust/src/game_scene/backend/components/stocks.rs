@@ -5,9 +5,38 @@ use crate::typedef::ResourceCount;
 
 type StocksMap = HashMap<Entity, ResourceCount>;
 
+#[derive(Default)]
+pub struct StocksOpt {
+    stocks_opt: Option<Stocks>,
+}
+
+impl Component for StocksOpt {
+    type Storage = VecStorage<Self>;
+}
+
+impl StocksOpt {
+    pub fn new(stocks_opt: Option<Stocks>) -> StocksOpt {
+        StocksOpt {
+            stocks_opt
+        }
+    }
+
+    pub fn get(&self) -> &Option<Stocks> {
+        &self.stocks_opt
+    }
+
+    pub fn set(&mut self, stocks_opt: Option<Stocks>) {
+        self.stocks_opt = stocks_opt;
+    }
+}
+
 #[derive(Clone, Default, Debug)]
 pub struct Stocks {
     stocks: StocksMap,
+}
+
+impl Component for Stocks {
+    type Storage = VecStorage<Self>;
 }
 
 impl Stocks {

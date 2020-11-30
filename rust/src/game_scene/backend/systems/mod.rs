@@ -1,2 +1,2 @@
-mod production;
-mod trade;
+pub mod production;
+pub mod trade;

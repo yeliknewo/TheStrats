@@ -53,6 +53,6 @@ fn make_global_job(global_job_type: GlobalJobType, resources: &HashMap<ResourceT
 pub fn make(world: &mut World, resources: &HashMap<ResourceType, Entity>) -> HashMap<GlobalJobType, Entity> {
     vec!(GlobalJobType::Farmer, GlobalJobType::Rancher).drain(..).map(|global_job_type| {
         let (global_job_type, global_job) = make_global_job(global_job_type, resources);
-        (global_job_type, world.insert((global_job, )))
+        (global_job_type, world.create_entity().with(global_job).build())
     }).collect()
 }

@@ -9,5 +9,8 @@ gdnative = "0.8"
 specs = "*"
 crossbeam = "*"
 
+[features]
+default = ["specs/shred-derive"]
+
 [lib]
 crate-type = ["cdylib"]

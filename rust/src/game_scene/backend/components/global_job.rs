@@ -1,9 +1,15 @@
+use specs::prelude::*;
+
 use super::Stocks;
 
 pub struct GlobalJob {
     name: String,
     base_inputs: Stocks,
     base_outputs: Stocks,
+}
+
+impl Component for GlobalJob {
+    type Storage = VecStorage<Self>;
 }
 
 impl GlobalJob {
