@@ -1,4 +1,6 @@
-use gdnative::prelude::*;
+use gdnative::*;
+
+extern crate specs;
 
 #[macro_use]
 pub mod macros;
@@ -69,7 +71,7 @@ pub mod log {
     }
 }
 
-fn init(handle: nativescript::init::InitHandle) {
+fn init(handle: init::InitHandle) {
     test_script::init(handle);
     main_menu::init(handle);
     game_scene::init(handle);

@@ -1,4 +1,4 @@
-use legion::*;
+use specs::prelude::*;
 
 use crate::typedef::ProvinceId;
 
@@ -8,6 +8,10 @@ pub struct Province {
     local_jobs: Vec<Entity>,
     neighbor_tiles: Vec<Entity>,
     upstream: Option<Entity>,
+}
+
+impl Component for Province {
+    type Storage = DenseVecStorage<Self>;
 }
 
 impl Province {

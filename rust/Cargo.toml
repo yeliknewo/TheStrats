@@ -5,8 +5,8 @@ authors = ["Kiley Owen <yelikdev@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-gdnative = "*"
-legion = "*"
+gdnative = "0.8"
+specs = "*"
 crossbeam = "*"
 
 [lib]

@@ -1,4 +1,4 @@
-use legion::*;
+use specs::prelude::*;
 
 use crate::typedef::ResourceCount;
 

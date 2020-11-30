@@ -1,4 +1,4 @@
-use gdnative::prelude::*;
+use gdnative::*;
 
 #[derive(NativeClass)]
 #[inherit(Button)]
@@ -20,6 +20,6 @@ impl MainMenuPlayButton {
     }
 }
 
-pub fn init(handle: nativescript::init::InitHandle) {
+pub fn init(handle: init::InitHandle) {
     handle.add_class::<MainMenuPlayButton>();
 }

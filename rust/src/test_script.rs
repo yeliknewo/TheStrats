@@ -1,4 +1,4 @@
-use gdnative::prelude::*;
+use gdnative::*;
 
 #[derive(NativeClass)]
 #[inherit(Control)]
@@ -16,6 +16,6 @@ impl TestScript {
     }
 }
 
-pub fn init(handle: nativescript::init::InitHandle) {
+pub fn init(handle: init::InitHandle) {
     handle.add_class::<TestScript>();
 }

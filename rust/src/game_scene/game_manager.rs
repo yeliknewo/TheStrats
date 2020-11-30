@@ -1,4 +1,4 @@
-use gdnative::prelude::*;
+use gdnative::*;
 
 use super::backend::{FrontToBrain, BrainToFront, BrainBunch, start, BrainError};
 
@@ -54,6 +54,6 @@ impl GameManager {
 
 }
 
-pub fn init(handle: nativescript::init::InitHandle) {
+pub fn init(handle: init::InitHandle) {
     handle.add_class::<GameManager>();
 }

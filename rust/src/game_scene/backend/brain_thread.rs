@@ -1,12 +1,12 @@
-use legion::*;
+use specs::prelude::*;
+use std::collections::HashMap;
 
 use super::{
-    systems,
     brain_channel::{
         FrontToBrain, BrainChannel
     }, 
     components::{
-        Province, Demographic, Stocks, LocalJob
+        Province, Demographic, Stocks, LocalJob, GlobalJob
     }, 
     entities::{self, global_jobs::GlobalJobType},
 };
@@ -14,9 +14,9 @@ use super::{
 pub fn start(mut brain_channel: BrainChannel) {
     let mut running = true;
     let mut world = World::default();
-    let mut schedule = Schedule::builder()
-    .add_system(systems::production::make())
-    .add_system(systems::trade::make())
+    let mut schedule = DispatcherBuilder::new()
+    .with()
+    .add_system()
     .build();
     let mut resources = Resources::default();
     while running {

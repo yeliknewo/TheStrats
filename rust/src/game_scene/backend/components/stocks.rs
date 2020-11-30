@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use legion::*;
+use specs::prelude::*;
 
 use crate::typedef::ResourceCount;
 
