@@ -7,6 +7,8 @@ mod brain_thread;
 mod brain_bunch;
 mod brain_channel;
 pub mod components;
+pub mod resources;
+pub mod input;
 mod entities;
 mod systems;
 

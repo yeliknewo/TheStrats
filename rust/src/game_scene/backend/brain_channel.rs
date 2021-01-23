@@ -1,16 +1,16 @@
 use crossbeam::channel::{Sender, Receiver, unbounded};
 
-use super::BrainError;
+use super::{BrainError, input::KeyCode};
 
 pub fn new_wombo() -> (FrontChannel, BrainChannel) {
-    let (send_front_to_brain, recv_front_to_brain) = unbounded();
-    let (send_brain_to_front, recv_brain_to_front) = unbounded();
+    let (send_to_brain, recv_from_front) = unbounded();
+    let (send_to_front, recv_from_brain) = unbounded();
     (FrontChannel{
-        recv_from_brain: recv_brain_to_front,
-        send_to_brain: send_front_to_brain,
+        recv_from_brain,
+        send_to_brain,
     }, BrainChannel {
-        recv_from_front: recv_front_to_brain,
-        send_to_front: send_brain_to_front,
+        recv_from_front,
+        send_to_front,
     })
 }
 
@@ -51,6 +51,9 @@ impl FrontChannel {
 pub enum FrontToBrain {
     Init,
     Exit,
+    KeyDown(KeyCode),
+    KeyUp(KeyCode),
+    Delta(f64),
 }
 
 pub enum BrainToFront {

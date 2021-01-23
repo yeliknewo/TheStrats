@@ -1,10 +1,21 @@
 use specs::prelude::*;
 use std::collections::HashMap;
+use gdnative::api::GlobalConstants;
 
-use super::{super::{components::{Province, Stocks, StocksOpt, LocalJob, Demographic, GlobalJob}}};
+use super::{super::{input::KeyCode, resources::{Time, KeyManager}, components::{Province, Stocks, StocksOpt, LocalJob, Demographic, GlobalJob}}};
 use crate::typedef::{ResourceCount};
 
-pub struct ProductionSystem;
+pub struct ProductionSystem {
+    last_time: f64,
+}
+
+impl ProductionSystem {
+    pub fn new() -> ProductionSystem {
+        ProductionSystem {
+            last_time: 0f64,
+        }
+    }
+}
 
 #[derive(SystemData)]
 pub struct ProductionSystemData<'a> {
@@ -14,6 +25,8 @@ pub struct ProductionSystemData<'a> {
     local_jobs: ReadStorage<'a, LocalJob>,
     demographics: ReadStorage<'a, Demographic>,
     global_jobs: ReadStorage<'a, GlobalJob>,
+    key_manager: Read<'a, KeyManager>,
+    time: Read<'a, Time>,
 }
 
 impl<'a> System<'a> for ProductionSystem {
@@ -22,10 +35,24 @@ impl<'a> System<'a> for ProductionSystem {
     fn run(&mut self, mut data: ProductionSystemData) {
         crate::log::full("Enter Production Run".into());
 
+        if !data.key_manager.is_key_down(KeyCode::UiAccept) {
+            return;
+        }
+
+        let current_time = data.time.get_time();
+
+        if current_time < self.last_time + 1.0 {
+            return;
+        }
+        self.last_time = current_time;
+
         let mut province_stocks_map = {    
             let mut province_stocks_map = HashMap::new();
             for (entity_province, _province, stocks_opt) in (&data.entities, &data.provinces, &data.stocks_opts).join() {
-                province_stocks_map.insert(entity_province, stocks_opt.get().clone().unwrap());
+                province_stocks_map.insert(entity_province, stocks_opt.get().clone().unwrap_or_else(|| {
+                    crate::log::empty_error(stack!());
+                    panic!(stack!())
+                }));
             }
             province_stocks_map
         };
@@ -74,8 +101,11 @@ impl<'a> System<'a> for ProductionSystem {
         }
 
         for (entity_province, province_stocks) in province_stocks_map.drain() {
-            crate::log::full(format!("Stocks 1: {:?}", province_stocks));
-            data.stocks_opts.get_mut(entity_province).unwrap().set(Some(province_stocks));
+            crate::log::small(format!("Stocks 1: {:?}", province_stocks));
+            data.stocks_opts.get_mut(entity_province).unwrap_or_else(|| {
+                crate::log::empty_error(stack!());
+                panic!(stack!())
+            }).set(Some(province_stocks));
         }
     }
 }

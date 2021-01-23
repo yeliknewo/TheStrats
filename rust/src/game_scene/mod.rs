@@ -1,4 +1,4 @@
-use gdnative::*;
+use gdnative::{prelude::*, api::*, nativescript::init};
 
 mod game_manager;
 mod backend;

@@ -1,4 +1,6 @@
-use gdnative::*;
+use gdnative::prelude::*;
+use gdnative::api::*;
+use gdnative::nativescript::init;
 
 extern crate specs;
 
@@ -15,9 +17,10 @@ mod typedef {
 }
 
 pub mod log {
-    use gdnative::*;
+    use gdnative::prelude::*;
+use gdnative::api::*;
 
-    const LOG_LEVEL: LogLevel = LogLevel::Full;
+    const LOG_LEVEL: LogLevel = LogLevel::Small;
 
     #[derive(Eq, PartialEq)]
     enum LogLevel {

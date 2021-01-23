@@ -6,8 +6,9 @@ use super::{
         FrontToBrain, BrainChannel, BrainToFront
     }, 
     components::{self, 
-        Province, Demographic, StocksOpt, LocalJob, GlobalJob
-    }, 
+        Province, Demographic, StocksOpt, LocalJob, GlobalJob, Stocks
+    },
+    resources::{KeyManager, Delta, Time},
     entities::{self, global_jobs::GlobalJobType},
     systems::{production::ProductionSystem, trade::TradeSystem},
 };
@@ -16,7 +17,7 @@ pub fn start(mut brain_channel: BrainChannel) {
     let mut running = true;
     let mut world = World::new();
     let mut dispatcher = DispatcherBuilder::new()
-    .with(ProductionSystem, "ProductionSystem", &[])
+    .with(ProductionSystem::new(), "ProductionSystem", &[])
     .with(TradeSystem, "TradeSystem", &["ProductionSystem"])
     .build();
     components::register_entities(&mut world);
@@ -28,12 +29,15 @@ pub fn start(mut brain_channel: BrainChannel) {
 
                     crate::log::full("Init Recieved".into());
 
+                    world.insert(KeyManager::new());
+
+                    world.insert(Time::new());
+
                     let resources = entities::resources::make(&mut world);
 
                     let demographic = Demographic::new(10);
 
                     let demographic_entity = world.create_entity().with(demographic).build();
-
 
                     let global_jobs = entities::global_jobs::make(&mut world, &resources);
 
@@ -45,10 +49,29 @@ pub fn start(mut brain_channel: BrainChannel) {
 
                     let province = Province::new(0, vec!(farmer_local_job_entity), vec!(), None);
 
-                    let province_entity = world.create_entity().with(province).with(StocksOpt::default()).build();
+                    let province_entity = world.create_entity().with(province).with(StocksOpt::new(Some(Stocks::new(HashMap::new())))).build();
 
                     crate::log::full("Exit Init".into());
 
+                }
+                FrontToBrain::KeyDown(key) => {
+                    world.try_fetch_mut::<KeyManager>().unwrap_or_else(|| {
+                        crate::log::empty_error(stack!());
+                        panic!(stack!())
+                    }).set_key_down(key);
+                }
+                FrontToBrain::KeyUp(key) => {
+                    world.try_fetch_mut::<KeyManager>().unwrap_or_else(|| {
+                        crate::log::empty_error(stack!());
+                        panic!(stack!())
+                    }).set_key_up(key);
+                }
+                FrontToBrain::Delta(delta) => {
+                    world.insert(Delta::new(delta));
+                    world.try_fetch_mut::<Time>().unwrap_or_else(|| {
+                        crate::log::empty_error(stack!());
+                        panic!(stack!())
+                    }).add_delta(delta);
                 }
                 FrontToBrain::Exit => running = false,
             }

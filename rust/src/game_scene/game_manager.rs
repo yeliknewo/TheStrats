@@ -1,6 +1,8 @@
-use gdnative::*;
+use gdnative::prelude::*;
+use gdnative::api::*;
+use gdnative::nativescript::init;
 
-use super::backend::{FrontToBrain, BrainToFront, BrainBunch, start, BrainError};
+use super::backend::{FrontToBrain, BrainToFront, BrainBunch, start, BrainError, input::KeyCode};
 
 type Owner = Control;
 
@@ -13,14 +15,14 @@ struct GameManager {
 #[methods]
 impl GameManager {
 
-    fn _init(_owner: Owner) -> Self {
+    fn new(_owner: &Owner) -> Self {
         GameManager {
             brain_bunch: start(),
         }
     }
 
     #[export]
-    fn _ready(&mut self, _owner: Owner) {
+    fn _ready(&mut self, _owner: &Owner) {
         match self.brain_bunch.send_event(FrontToBrain::Init) {
             Ok(()) => (),
             Err(error) => crate::log::empty_error(format!("{}", BrainError::BrainError(Box::new(error), stack!()))),
@@ -28,18 +30,25 @@ impl GameManager {
     }
 
     #[export]
-    fn _notification(&mut self, _owner: Owner, i: i64) {
+    fn _notification(&mut self, _owner: &Owner, i: i64) {
         if i == Node::NOTIFICATION_WM_QUIT_REQUEST {
             self.stop_backend();
         }
     }
 
     #[export]
-    fn _process(&mut self, _owner: Owner, _delta: f64) {
+    fn _process(&mut self, _owner: &Owner, delta: f64) {
         for brain_to_front_event in self.brain_bunch.try_get_events() {
             match brain_to_front_event {
                 BrainToFront::Log(msg) => crate::log::empty(msg),
             }
+        }
+        self.brain_bunch.send_event(FrontToBrain::Delta(delta)).ok();
+        if Input::godot_singleton().is_action_just_pressed("ui_accept") {
+            self.brain_bunch.send_event(FrontToBrain::KeyDown(KeyCode::UiAccept)).ok();
+        }
+        if Input::godot_singleton().is_action_just_released("ui_accept") {
+            self.brain_bunch.send_event(FrontToBrain::KeyUp(KeyCode::UiAccept)).ok();
         }
     }
 
